@@ -1,0 +1,37 @@
+# you can use docker-compose to create and run multiple containers at the same time
+# within kinda of a network. the image can come from hub or build service image using Dockefile
+
+# but we can also use docker-compose to make running 1 service easier.
+# if our run command is long including port mapping and volume mpounts, we can just
+# do it in docker compose and then just write up.
+version: "3"
+services:
+  web:
+  # this container is responsible for running our service
+    build:
+      # we set up context and dockerfile because our Dockerfile is with .dev in end
+      # otherwise we could just say build: . if Dockerfile is in pwd
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - /app/node_modules
+      - .:/app
+  tests:
+  # this container is responsible for running test by specifying startup command
+  # this is alternative to "docker exec -it web_service_containerID npm run test"
+  # where we attach a new command in server running container.
+  # if we would say "docker run -it web_service_imageID npm run test" then
+  # we would not get updated test suite because we still run old image.
+  # If we use exec, the benefit is that we can input commands to test suite
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - /app/node_modules
+      - .:/app
+    command: ["npm", "run", "test"]
+    # so now if we change source file for test which is in volume, test suite reruns
+    # but the thing is that we cannot give test suite orders if it is launched as second
+    # container

@@ -1,0 +1,18 @@
+FROM node:alpine
+# create base OS
+WORKDIR '/app'
+# set . for container as /app
+COPY package.json .
+# now we copy package.json to /app, this is for dependencies
+RUN npm install
+# install npm
+COPY . .
+# even if we mount volume using run or docker-compose file thus
+# getting source files over to container FS, we can leave this COPY . .
+# copy rest of project files to container FS
+CMD ["npm", "run", "start"]
+# start up the project
+
+# in our project folder originally we had node_modules folder.
+# react automatically installed dependencies we need, but then
+# using RUN command we installed dependencies ourselves. Thus, we deleted node_modules folder
