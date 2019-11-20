@@ -22,6 +22,9 @@ RUN npm run build
 # build phase. Everything else gets dropped.
 FROM nginx
 # as we start writing FROM, docker understands that this is a new block
+EXPOSE 80
+# because when we run web app from command line, we map ports. elasticbeanstalk
+# will see this and map all incoming traffic to this port.
 COPY --from=builder /app/build /usr/share/nginx/html
 # what we are saying here is that from builder phase /app/build folder we want
 # to copy everything to nginx folder that serves user by default
