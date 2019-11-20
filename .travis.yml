@@ -1,0 +1,19 @@
+# tell travis we need docker
+# tell to build out image using Dockerfile.dev
+# run test suite
+
+language: generic
+sudo: required
+# we tell travis we need super user permissions to use Docker
+services:
+  - docker
+  # we tell travis we need docker pre installed.
+before_install:
+  # commands executed before our tests are run
+  - docker build -t lauris-printify/docker-react -f Dockerfile.dev .
+  # we tag the image so that travis can refer to it
+script:
+  # script section contains commands required to run our testsuite
+  - docker run -e CI=true lauris-printify/docker-react npm run test
+  # if travis receives exit code other than 0 it assumes test suite failed
+  # remember, that Dockerfile.dev can run npm run test
