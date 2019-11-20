@@ -17,3 +17,32 @@ script:
   - docker run -e CI=true lauris-printify/docker-react npm run test
   # if travis receives exit code other than 0 it assumes test suite failed
   # remember, that Dockerfile.dev can run npm run test
+deploy:
+  edge: true
+  provider: elasticbeanstalk
+  region: "us-east-2"
+  app: docker-react
+  # name of our app in our aws
+  env: DockerReact-env
+  # environment name of your app
+  bucket_name: elasticbeanstalk-us-east-2-731354883761
+  # when travis is ready for production, it zips all your repo code and puts in
+  # on your S3 aws harddrive saying : "hey aws, code is ready to deploy". bucket_name
+  # is where travis puts the zip name. You find s3 under services.
+  bucket_path: docker-react
+  # at the start, it is same as app name. this is folder where the files are put in.
+  # this folder is within that bucket
+  on:
+    branch: master
+    # so our code is tested and deployed only if we push to branch master.
+    # if we push code to feature branch it is not tested and deployed.
+  # iam is a service managing API keys that can be used by outside services.
+  # we go to iam -> users -> add user -> docker-react-travis-ci. Then select
+  # programmatic access which means requests as travis wont use console.
+  # after completing setup and permissions for user of api you get secret access key
+  # which is shown only once and you also get access key.
+  # the aws keys should be secret and not show up on public repo of github, which is why
+  # travis has a secret feature. You stash these secret keys in Travis projects settings.
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: $AWS_SECRET_KEY
+  # this tells use local environment configuration from travis dashboard to get these values
